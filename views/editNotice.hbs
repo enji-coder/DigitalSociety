@@ -1,0 +1,69 @@
+﻿{{>header}}
+<section class="content home">
+            <div class="block-header">
+                <div class="row">
+                    <div class="col-lg-5 col-md-5 col-sm-12">
+                        <h2>Edit Notice <small class="text-muted">Welcome to Oreo</small></h2>
+                    </div>            
+                    <div class="col-lg-7 col-md-7 col-sm-12 text-right">
+                        
+                        <ul class="breadcrumb float-md-right">
+                            <li class="breadcrumb-item"><a href="..\dashboard\index.html"><i class="zmdi zmdi-home"></i> Oreo</a></li>
+                                                            <li class="breadcrumb-item">Notice</li>
+                                                                                        <li class="breadcrumb-item active">Edit Notice</li>
+                                                    </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid">                
+                
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12">
+        <div class="card">
+            <div class="header">
+                <h2><strong>Edit</strong> Notice<small>Description text here...</small> </h2>
+                <ul class="header-dropdown">                            
+                    <li class="remove">
+                        <a role="button" class="boxs-close"><i class="zmdi zmdi-close"></i></a>
+                    </li>
+                </ul>
+            </div>
+            
+            {{#if s_msg}}
+            <div class="alert alert-success" role="alert">
+                {{s_msg}}
+            </div>
+            {{/if}}
+
+            <form method="post" action="/chairman/updateNotice">
+            <div class="body">
+                <div class="row clearfix">
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <input type="hidden" class="form-control" placeholder="title" name="id" value="{{editData._id}}">
+                            <input type="text" class="form-control" placeholder="title" name="title" value="{{editData.title}}">
+                        </div>
+                    </div>
+                    
+                </div>
+               
+                <div class="row clearfix">
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <textarea rows="4" class="form-control no-resize" placeholder="Please type what you want..." name="description">{{editData.description}}</textarea>
+                        </div>
+                    </div>
+                    <div class="col-sm-12">
+                        <input type="submit" class="btn btn-primary btn-round" value="Update">
+                        <button type="submit" class="btn btn-default btn-round btn-simple">Cancel</button>
+                    </div>
+                </div>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+            </div>
+</section>
+{{>footer}}

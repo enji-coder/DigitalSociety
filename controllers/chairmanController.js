@@ -2,9 +2,15 @@ const express = require("express")
 const User = require("../src/models/usersmodel")
 const Chairman = require("../src/models/chairmanmodel")
 const Notice = require("../src/models/noticemodel")
+const Member = require("../src/models/membermodel")
+const bcyrptjs = require("bcryptjs")
+const cookieParser = require('cookie-parser');
+const chairmanmodel = require("../src/models/chairmanmodel")
 
-exports.homepage = (req, res) => {
-    res.render("index")
+exports.homepage = async(req, res) => {
+    const no_of_notice = await Notice.find().count()
+    //console.log("-------------------->>>>> no of notice",no_of_notice);
+    res.render("index",{no_of_notice})
 }
 exports.login = (req, res) => {
     // res.send("login page")
@@ -15,7 +21,10 @@ exports.registerChairmanPage = (req, res) => {
 }
 exports.registerChairman = async (req, res) => {
     try {
+
         console.log("------->", req.body);
+        // const password = "John2468$"
+        // const hashedPassword = await bcrypt.hash(password, 8)
         const u = new User({
             email: req.body.email,
             password: req.body.password,
@@ -48,12 +57,19 @@ exports.registerChairman = async (req, res) => {
 }
 
 exports.loginevalute = async (req,res)=>{
-    const uid = await  User.findOne({email : req.body.email,password : req.body.password})
-    const cid = await  Chairman.findOne({userid: uid})
-    //console.log("--------------->>>> uid",uid);
-    
-    if (uid)
+    // const uid = await  User.findOne({email : req.body.email,password : req.body.password})
+    const uid = await User.findOne({email:req.body.email})
+
+    const isValid = await bcyrptjs.compare(req.body.password,uid.password)
+
+    if (isValid)
     {
+        token = await uid.generateToken();
+        //console.log(token);
+        res.cookie("jwt",token)
+        //console.log("---->Token",token);
+        const cid = await  Chairman.findOne({userid: uid})
+        //console.log("--------------->>>> uid",uid);    
         res.render("index",{'uid':uid,'cid':cid})
     }
     else
@@ -81,13 +97,71 @@ exports.addNoticeContent = async (req,res) =>{
     if (nid)
     {
         // for api purpose
-        res.status(200).json({nid})
+        //res.status(200).json({nid})
         //res.send({"status" : "200","data":nid})
-        //res.render("addNotice")
+        s_msg = "Successfully notice added"
+        res.render("addNotice",{'s_msg':s_msg})
     }
     else
     {
         res.send({"status" : "404","message":"Something went wrong "})
     }
 }
+exports.getNotice =async (req,res)  =>{
+    const data =await Notice.find()
+    const uid = req.uid
+    const cid = req.cid
+    console.log("--->>> uid",uid.email);
+    //console.log("--->>> data",data);
+    res.render("noticelist",{data,uid,cid})
+}
+exports.editNotice = async(req,res)=>{
+    const id = req.params.id
+    console.log("---------->>>> id",id);
+    const editData =await Notice.findById(req.params.id)
+    console.log("----EDIT data ",editData.title);
+    res.render("editNotice",{editData})
+}
+exports.updateNotice = async(req,res)=>{
+    const resdata = await Notice.findByIdAndUpdate(req.body.id,req.body)
+    res.redirect("/chairman/allNotice")
+}
+exports.deleteNotice = async(req,res)=>{
+    const id = req.params.id
+    const resdata = await Notice.findByIdAndDelete(id)
+    console.log("----->>>> deleted");
+    res.redirect("/chairman/allNotice")
+}
+exports.addMemberpage = async(req,res)=>{
+    res.render("addMember")
+}
+exports.addMember = async(req,res)=>{
+    console.log("---->>> email",req.body.email);
+    const uid = new User({
+        email: req.body.email,
+        password: req.body.password,
+        role: "member"
+    })
 
+    await uid.save()
+
+    const mid = Member({
+        userid : uid,
+        firstname : req.body.firstname,
+        lastname : req.body.lastname,
+        contact : req.body.contact,
+        houseno : req.body.houseno,
+        vehicle_details : req.body.vehicle_details,
+        blood_group : req.body.blood_group,
+        occupation : req.body.occupation,
+        job_address : req.body.job_address
+    })
+    await mid.save() 
+    
+    s_msg = "Successfully Member added"
+    res.render("addMember",{'s_msg':s_msg})
+}
+exports.logout = async(req,res)=>{
+    res.clearCookie("jwt")
+    res.render("login")
+}
