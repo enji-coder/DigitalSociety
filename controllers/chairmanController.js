@@ -6,6 +6,7 @@ const Member = require("../src/models/membermodel")
 const bcyrptjs = require("bcryptjs")
 const cookieParser = require('cookie-parser');
 const chairmanmodel = require("../src/models/chairmanmodel")
+const ImageModel = require("../src/models/imagemodel")
 
 exports.homepage = async(req, res) => {
     const no_of_notice = await Notice.find().count()
@@ -107,13 +108,42 @@ exports.addNoticeContent = async (req,res) =>{
         res.send({"status" : "404","message":"Something went wrong "})
     }
 }
+exports.addNoticeApi = async (req,res) =>{
+    let input = req.body; // fetch all data from input fields 
+    Notice.create(input)
+        .then((resData)=>{
+            res.send({status : 200,data : resData})
+        })
+        .catch((e)=>{
+            res.send({status : 400,message : e.message});
+        })
+    // console.log(req.body);
+    // const nid = await Notice({
+    //     title : req.body.title,
+    //     description : req.body.description
+    // }).save()
+    // console.log("------------->>>> nid",nid);
+    // if (nid)
+    // {
+    //     // for api purpose
+    //     res.status(200).json({nid})
+    //     res.send({"status" : "200","data":nid})
+    //     // s_msg = "Successfully notice added"
+    //     // res.render("addNotice",{'s_msg':s_msg})
+    // }
+    // else
+    // {
+    //     res.send({"status" : "404","message":"Something went wrong "})
+    // }
+}
 exports.getNotice =async (req,res)  =>{
     const data =await Notice.find()
     const uid = req.uid
     const cid = req.cid
-    console.log("--->>> uid",uid.email);
+    //console.log("--->>> uid",uid.email);
+    res.send({"status" : "200","data":data})
     //console.log("--->>> data",data);
-    res.render("noticelist",{data,uid,cid})
+    // res.render("noticelist",{data,uid,cid})
 }
 exports.editNotice = async(req,res)=>{
     const id = req.params.id
@@ -165,3 +195,19 @@ exports.logout = async(req,res)=>{
     res.clearCookie("jwt")
     res.render("login")
 }
+
+exports.singlepage = async(req,res)=>{
+    res.render("singleimage")
+}
+exports.uploadsingleimage = async(req,res)=>{
+    const imid = await ImageModel({
+        img : req.file.filename,
+    }).save()
+    res.render("singleimage")
+}
+exports.displayIMage = async(req,res)=>{
+    const iall = await ImageModel.find()
+    console.log(iall);
+    res.render("displayimage",{'iall':iall})
+}
+

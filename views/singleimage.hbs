@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+</head>
+<body>
+    <form method="post" action="/chairman/uploadsingleimage" enctype="multipart/form-data">
+        <input type="file" name="img" />
+        <input type="submit"/>
+    </form>
+
+
+    {{#each iall }}
+        <img src={{this.img.file.path}} />
+    {{/each}}
+</body>
+</html>

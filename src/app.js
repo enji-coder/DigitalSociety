@@ -5,12 +5,18 @@ const axios = require("axios")
 const cookieParser = require('cookie-parser'); 
 // for db connection 
 const mongoose = require("mongoose")
+
+const multer = require("multer")
+
+app.use(express.json()); // for api purpose data need to accept in json format 
 app.use(express.urlencoded({extended:false}))
+
 app.use(cookieParser())
 
 
 // declare public folder as a static 
 app.use("/static/",express.static("public"))
+app.use('/uploads', express.static('uploads'));
 
 // configure hbs as a view engine and declare views as a views 
 app.set("view engine","hbs")
