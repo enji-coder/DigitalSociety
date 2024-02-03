@@ -25,13 +25,14 @@ routes.post("/addMember",addMember)
 
 
 var storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-      cb(null, './uploads')
-    },
-    filename: function (req, file, cb) {
-      cb(null, file.originalname)
-    }
-})
+  destination : (req,file,cb)=>{
+      cb(null,"public/img")
+  },
+  filename : (req,file,cb)=>{
+      cb(null,file.fieldname+"-"+Date.now()+".jpeg")
+  }
+});
+  
 var upload = multer({ storage: storage })
 
 

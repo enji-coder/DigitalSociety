@@ -16,7 +16,7 @@ app.use(cookieParser())
 
 // declare public folder as a static 
 app.use("/static/",express.static("public"))
-app.use('/uploads', express.static('uploads'));
+//app.use('/uploads', express.static('uploads'));
 
 // configure hbs as a view engine and declare views as a views 
 app.set("view engine","hbs")

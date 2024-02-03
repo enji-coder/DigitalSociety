@@ -200,9 +200,13 @@ exports.singlepage = async(req,res)=>{
     res.render("singleimage")
 }
 exports.uploadsingleimage = async(req,res)=>{
-    const imid = await ImageModel({
-        img : req.file.filename,
-    }).save()
+    console.log("========???",req?.file?.filename);
+    // const imid = await ImageModel({
+    //     img : req.file.filename,
+    // }).save()
+
+    req.body.img = req?.file?.filename   // fetch filename from url req and store it first in body and execute insert query
+    ImageModel.create(req.body)
     res.render("singleimage")
 }
 exports.displayIMage = async(req,res)=>{
